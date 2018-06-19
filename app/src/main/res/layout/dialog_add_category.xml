@@ -1,0 +1,55 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent">
+
+
+    <TextView
+        android:id="@+id/add_category"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Add category"
+        android:textStyle="bold"
+        android:layout_marginTop="15dp"
+        android:fontFamily="sans-serif-light"
+        android:layout_marginLeft="15dp"
+        android:textSize="22sp"/>
+
+    <EditText
+        android:id="@+id/add_category_edit"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_below="@+id/add_category"
+        android:layout_marginRight="15dp"
+        android:hint="add category"
+        android:layout_marginTop="25dp"
+        android:layout_marginLeft="15dp"/>
+
+
+    <android.support.v7.widget.AppCompatButton
+        android:id="@+id/cancel_category_btn"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="CANCEL"
+        android:layout_below="@+id/add_category_edit"
+        android:layout_marginTop="55dp"
+        android:layout_toLeftOf="@+id/add_category_btn"
+        android:layout_marginRight="15dp"
+        android:textSize="16dp"
+        android:fontFamily="sans-serif-light"
+        style="@style/FlatButton"/>
+
+    <android.support.v7.widget.AppCompatButton
+        android:id="@+id/add_category_btn"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignParentRight="true"
+        android:layout_below="@+id/add_category_edit"
+        android:layout_marginTop="55dp"
+        android:layout_marginRight="15dp"
+        android:text="ADD"
+        android:textSize="16dp"
+        android:fontFamily="sans-serif-light"
+        style="@style/FlatButton"/>
+
+</RelativeLayout>

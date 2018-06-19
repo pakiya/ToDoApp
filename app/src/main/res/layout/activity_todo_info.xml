@@ -1,0 +1,109 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    tools:context=".ui.add_todo_item.todo_info.TodoInfo">
+
+    <RelativeLayout
+        android:id="@+id/top_tool_bar_todo_info_activity"
+        android:layout_width="match_parent"
+        android:layout_height="?actionBarSize"
+        android:background="#FAFAFA"
+        android:elevation="15dp">
+
+        <ImageView
+            android:id="@+id/back_image_view_btn"
+            android:layout_width="?actionBarSize"
+            android:layout_height="?actionBarSize"
+            android:padding="15dp"
+            android:src="@drawable/ic_cross"/>
+
+        <TextView
+            android:id="@+id/category_name_top_tool_bar_text"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Add Item"
+            android:textSize="20sp"
+            android:layout_toRightOf="@+id/back_image_view_btn"
+            android:textColor="@android:color/black"
+            android:alpha="0.7"
+            android:layout_marginLeft="15dp"
+            android:layout_centerVertical="true"/>
+
+        <android.support.v7.widget.AppCompatButton
+            android:id="@+id/todo_info_delete_btn"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Delete"
+            android:layout_centerVertical="true"
+            android:textColor="@color/colorAccent"
+            android:visibility="gone"
+            android:layout_toLeftOf="@+id/todo_info_save_btn"
+            style="@style/FlatButton"/>
+
+        <android.support.v7.widget.AppCompatButton
+            android:id="@+id/todo_info_save_btn"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Save"
+            android:layout_centerVertical="true"
+            android:textColor="@color/colorAccent"
+            android:layout_alignParentRight="true"
+            style="@style/FlatButton"/>
+
+    </RelativeLayout>
+
+
+    <ImageView
+        android:id="@+id/todo_item_image"
+        android:layout_width="match_parent"
+        android:layout_height="250dp"
+        android:background="#000000"
+        android:alpha="0.2"
+        android:visibility="invisible"
+        android:layout_below="@+id/top_tool_bar_todo_info_activity"/>
+
+    <android.support.v7.widget.AppCompatButton
+        android:id="@+id/add_image_btn"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="ADD Photo"
+        android:layout_below="@+id/todo_item_image"
+        android:layout_centerHorizontal="true"
+        style="@style/FlatButton"/>
+
+    <EditText
+        android:id="@+id/todo_item_name_edit"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:hint="Item Name"
+        android:layout_marginLeft="15dp"
+        android:layout_marginRight="15dp"
+        android:layout_marginTop="10dp"
+        android:layout_below="@+id/add_image_btn"/>
+
+    <EditText
+        android:id="@+id/todo_item_description_edit"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:hint="Description (optional)"
+        android:layout_marginLeft="15dp"
+        android:layout_marginRight="15dp"
+        android:layout_marginTop="10dp"
+        android:layout_below="@+id/todo_item_name_edit"/>
+
+    <Switch
+        android:id="@+id/todo_complete_switch"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="Completed"
+        android:layout_marginLeft="15dp"
+        android:layout_marginRight="15dp"
+        android:textSize="20sp"
+        android:layout_marginTop="25dp"
+        android:textColor="#B2B2B2"
+        android:layout_below="@+id/todo_item_description_edit"/>
+
+</RelativeLayout>
