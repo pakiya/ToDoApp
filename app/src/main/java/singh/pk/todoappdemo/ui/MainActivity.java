@@ -33,6 +33,7 @@ import java.util.Map;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
+import butterknife.internal.Utils;
 import singh.pk.todoappdemo.R;
 import singh.pk.todoappdemo.ui.add_todo_item.AddTodoItem;
 import singh.pk.todoappdemo.ui.onboarding.login.Start;
@@ -44,6 +45,9 @@ public class MainActivity extends AppCompatActivity {
     @BindView(R.id.add_category_btn) FloatingActionButton addCategoryBtn;
     @BindView(R.id.main_page_toolbar) Toolbar mToolbar;
     @BindView(R.id.progress_bar_main_activity) ProgressBar mProgressBar;
+
+    EditText addCategoryEdit;
+    TextView errorTextView;
 
     // ProgressDialog Object
     private ProgressDialog mRegProgress;
@@ -58,6 +62,8 @@ public class MainActivity extends AppCompatActivity {
 
     FirebaseUser current_user;
     String current_uid;
+
+    AlertDialog dialog;
 
     boolean categoryAble = true;
 
@@ -89,8 +95,13 @@ public class MainActivity extends AppCompatActivity {
             Log.e("MainActivity", t.getMessage());
         }
 
+        try {
             mDatabase = FirebaseDatabase.getInstance().getReference().child("Users").child(current_uid)
                     .child("categories");
+        }catch (RuntimeException t) {
+            Log.e("MainActivity", t.getMessage());
+        }
+
 
 
 
@@ -139,6 +150,7 @@ public class MainActivity extends AppCompatActivity {
                     public void onClick(View view) {
                         Intent todos = new Intent(MainActivity.this, AddTodoItem.class);
                         todos.putExtra("category_id", categoryName);
+                        todos.putExtra("category_name",model.getCategoryName());
                         startActivity(todos);
                     }
                 });
@@ -147,10 +159,12 @@ public class MainActivity extends AppCompatActivity {
             }
         };
 
-        removeProgress();
         categoryRecyvlerView.setAdapter(firebaseRecyclerAdapter);
-
+        removeProgress();
     }
+
+
+
     }
 
     public static class CategoryViewHolder extends RecyclerView.ViewHolder {
@@ -205,17 +219,24 @@ public class MainActivity extends AppCompatActivity {
 
                 AlertDialog.Builder mBuilder = new AlertDialog.Builder(MainActivity.this);
                 final View mView = getLayoutInflater().inflate(R.layout.dialog_add_category, null);
-                final EditText addCategoryEdit = mView.findViewById(R.id.add_category_edit);
+                addCategoryEdit = mView.findViewById(R.id.add_category_edit);
+                errorTextView = mView.findViewById(R.id.error_text);
                 AppCompatButton cencelCategoryBtn = mView.findViewById(R.id.cancel_category_btn);
                 AppCompatButton addCategoryBtn = mView.findViewById(R.id.add_category_btn);
+
 
                 addCategoryBtn.setOnClickListener(new View.OnClickListener() {
                     @Override
                     public void onClick(View view) {
                         if (!addCategoryEdit.getText().toString().isEmpty()) {
+
                             final String categoryName = addCategoryEdit.getText().toString();
 
-                            showProgress();
+                            mRegProgress.setTitle("Logging In");
+                            mRegProgress.setMessage("Please wait while we check your credentials.");
+                            mRegProgress.setCanceledOnTouchOutside(false);
+                            mRegProgress.show();
+
                             mDatabaseForFetch.addListenerForSingleValueEvent(new ValueEventListener() {
                                 @Override
                                 public void onDataChange(DataSnapshot dataSnapshot) {
@@ -228,7 +249,8 @@ public class MainActivity extends AppCompatActivity {
                                 }
                             });
 
-//                            Toast.makeText(MainActivity.this, "No save", Toast.LENGTH_SHORT).show();
+                        } else {
+                            addCategoryEdit.setError("Enter category");
                         }
                     }
                 });
@@ -236,12 +258,12 @@ public class MainActivity extends AppCompatActivity {
                 cencelCategoryBtn.setOnClickListener(new View.OnClickListener() {
                     @Override
                     public void onClick(View view) {
-
+                        dialog.dismiss();
                     }
                 });
 
                 mBuilder.setView(mView);
-                AlertDialog dialog = mBuilder.create();
+                dialog = mBuilder.create();
                 dialog.show();
 
             }
@@ -252,7 +274,7 @@ public class MainActivity extends AppCompatActivity {
 
         ArrayList<String> categoryName = new ArrayList<>(0);
 
-        if (categoryName.size()!=0){
+        if (value != null){
             for (Map.Entry<String, Object> entry : value.entrySet()) {
                 Map categary = (Map) entry.getValue();
                 categoryName.add((String) categary.get("category_name"));
@@ -261,22 +283,22 @@ public class MainActivity extends AppCompatActivity {
             for (int i = 0; i<categoryName.size(); i++) {
                 if (categoryNameEdit.equals(categoryName.get(i))){
                     categoryAble = false;
-                    removeProgress();
                     break;
                 }
             }
-        } else if (categoryAble){
+            errorTextView.setVisibility(View.VISIBLE);
+        }
+
+        if (categoryAble){
             HashMap<String, String> categoryMap = new HashMap<>();
             categoryMap.put("category_name", categoryNameEdit);
-            categoryMap.put("todo_count", "Places add todo.");
+            categoryMap.put("todo_count", "0 item");
             mDatabase.push().setValue(categoryMap);
+            dialog.dismiss();
         }
         categoryAble = true;
 
-
-
-
-        removeProgress();
+        mRegProgress.dismiss();
     }
 
     public void showProgress() { mProgressBar.setVisibility(View.VISIBLE); }

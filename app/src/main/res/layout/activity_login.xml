@@ -27,6 +27,8 @@
         android:text="Login to your Account"
         android:textColor="@android:color/black"
         android:textSize="18sp"
+        android:fontFamily="sans-serif-light"
+        android:alpha="0.6"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/login_toolbar"
         android:layout_marginLeft="20dp" />
@@ -45,6 +47,7 @@
         <EditText
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
+            android:inputType="textEmailAddress"
             android:hint="Your Email" />
     </android.support.design.widget.TextInputLayout>
 
@@ -62,6 +65,7 @@
         <EditText
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
+            android:inputType="textPassword"
             android:hint="Password" />
     </android.support.design.widget.TextInputLayout>
 
@@ -70,7 +74,7 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_alignParentBottom="true"
-        android:backgroundTint="@color/colorPrimary"
+        android:backgroundTint="@color/colorAccent"
         android:paddingLeft="20dp"
         android:paddingRight="20dp"
         android:text="LOGIN"

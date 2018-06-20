@@ -3,11 +3,13 @@ package singh.pk.todoappdemo.ui.add_todo_item.todo_info;
 import android.app.ProgressDialog;
 import android.content.Intent;
 import android.graphics.Bitmap;
+import android.graphics.Color;
 import android.net.Uri;
 import android.support.annotation.NonNull;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.support.v7.widget.AppCompatButton;
+import android.support.v7.widget.RecyclerView;
 import android.util.Log;
 import android.view.View;
 import android.widget.CompoundButton;
@@ -17,15 +19,20 @@ import android.widget.Switch;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.firebase.ui.database.FirebaseRecyclerAdapter;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
+import com.google.firebase.database.DataSnapshot;
+import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
+import com.google.firebase.database.ValueEventListener;
 import com.google.firebase.storage.FirebaseStorage;
 import com.google.firebase.storage.StorageReference;
 import com.google.firebase.storage.UploadTask;
+import com.squareup.picasso.Picasso;
 import com.theartofdev.edmodo.cropper.CropImage;
 
 import java.io.ByteArrayOutputStream;
@@ -38,6 +45,7 @@ import butterknife.BindView;
 import butterknife.ButterKnife;
 import id.zelory.compressor.Compressor;
 import singh.pk.todoappdemo.R;
+import singh.pk.todoappdemo.ui.add_todo_item.TodoPojo;
 
 public class TodoInfo extends AppCompatActivity {
 
@@ -74,7 +82,7 @@ public class TodoInfo extends AppCompatActivity {
 
     boolean todoCompleteStatus = false;
 
-    String todoCount;
+    String todoCount = "1 item";
     String updateTodo;
 
     private static final int GALLERY_PICK = 1;
@@ -89,25 +97,11 @@ public class TodoInfo extends AppCompatActivity {
 
         category_id = getIntent().getStringExtra("category_id");
 
-        todoCount = getIntent().getStringExtra("todo_count");
+        todoCount = getIntent().getStringExtra("todo_count")+ " items";
 
         todo_id = getIntent().getStringExtra("todo_id");
         category_id_for_todo = getIntent().getStringExtra("todo_category_id");
         updateTodo = getIntent().getStringExtra("update_todo");
-
-
-        try {
-            if (updateTodo.equals("UPDATE_TODO")){
-
-                deleteTodoInfoBtn.setVisibility(View.VISIBLE);
-                todoImageView.setVisibility(View.VISIBLE);
-                addImageBtn.setText("CHANGE PHOTO");
-                categoyNameTxt.setText("Edit item");
-
-            }
-        } catch (RuntimeException t) {
-            Log.e("TodoInfo", t.getMessage());
-        }
 
 
         // Initialize ProgressDialog.
@@ -120,6 +114,21 @@ public class TodoInfo extends AppCompatActivity {
 
         current_user = FirebaseAuth.getInstance().getCurrentUser();
         current_uid =  current_user.getUid();
+
+        try {
+            if (updateTodo.equals("UPDATE_TODO")){
+
+                deleteTodoInfoBtn.setVisibility(View.VISIBLE);
+                todoImageView.setVisibility(View.VISIBLE);
+                addImageBtn.setText("CHANGE PHOTO");
+                categoyNameTxt.setText("Edit item");
+
+                showTodoItemForUpdate();
+
+            }
+        } catch (RuntimeException t) {
+            Log.e("TodoInfo", t.getMessage());
+        }
 
         try {
             mDatabase = FirebaseDatabase.getInstance().getReference().child("Users").child(current_uid)
@@ -135,13 +144,40 @@ public class TodoInfo extends AppCompatActivity {
             Log.d("DataReference", t.getMessage());
         }
 
-
-
-        Log.d("TodoStatus", " To Do default status :::: "+todoCompleteStatus);
-
         initViews();
 
     }
+
+    private void showTodoItemForUpdate() {
+
+        mDatabase = FirebaseDatabase.getInstance().getReference().child("Users").child(current_uid)
+                .child("todo").child(category_id_for_todo).child(todo_id);
+
+        mDatabase.addListenerForSingleValueEvent(new ValueEventListener() {
+            @Override
+            public void onDataChange(DataSnapshot dataSnapshot) {
+                TodoPojo todoPojo = dataSnapshot.getValue(TodoPojo.class);
+
+                todoItemNameEdit.setText(todoPojo.getTodo_name());
+                todoItemDescription.setText(todoPojo.getTodo_description());
+                if (todoPojo.getTodo_status().equals("true")){
+                    todoCompleteSwitch.setChecked(true);
+                    todoCompleteStatus = true;
+                } else {
+                    todoCompleteSwitch.setChecked(false);
+                }
+                Picasso.get().load(todoPojo.getTodo_image()).placeholder(R.color.colorImageView).into(todoImageView);
+
+            }
+
+            @Override
+            public void onCancelled(DatabaseError databaseError) {
+                Log.w("TodoInfo", "getUser:onCancelled", databaseError.toException());
+            }
+        });
+
+    }
+
 
     private void initViews() {
 
@@ -155,13 +191,8 @@ public class TodoInfo extends AppCompatActivity {
         todoCompleteSwitch.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
             @Override
             public void onCheckedChanged(CompoundButton compoundButton, boolean b) {
-                if (b) {
-                    todoCompleteStatus = true;
-                    Log.d("TodoStatus", " To Do is Complete :::: "+todoCompleteStatus);
-                } else {
-                    todoCompleteStatus = false;
-                    Log.d("TodoStatus", " To Do is Un Complete :::: "+todoCompleteStatus);
-                }
+                if (b) todoCompleteStatus = true;
+                 else todoCompleteStatus = false;
             }
         });
 
@@ -176,7 +207,6 @@ public class TodoInfo extends AppCompatActivity {
                 if (!todoName.isEmpty()){
 
                     if ( todo_id != null ){
-
 
                         mRegProgress.setTitle("Todo Update");
                         mRegProgress.setMessage("Please wait while we update your todo !");
@@ -225,8 +255,10 @@ public class TodoInfo extends AppCompatActivity {
 
                                     Map update_todoCountMap = new HashMap();
                                     update_todoCountMap.put("todo_count", todoCount);
+                                    update_todoCountMap.put("count_start", "true");
 
-                                    mDatabaseCategory.updateChildren(update_todoCountMap).addOnCompleteListener(new OnCompleteListener<Void>() {
+                                    mDatabaseCategory.updateChildren(update_todoCountMap)
+                                            .addOnCompleteListener(new OnCompleteListener<Void>() {
                                                 @Override
                                                 public void onComplete(@NonNull Task<Void> task) {
                                                     if (task.isSuccessful()){
@@ -265,6 +297,7 @@ public class TodoInfo extends AppCompatActivity {
 
                         if (task.isSuccessful()){
                             mRegProgress.dismiss();
+                            finish();
                         }
                     }
                 });
@@ -275,11 +308,18 @@ public class TodoInfo extends AppCompatActivity {
             @Override
             public void onClick(View view) {
 
-                Intent galleryIntent = new Intent();
-                galleryIntent.setType("image/*");
-                galleryIntent.setAction(Intent.ACTION_GET_CONTENT);
+                if (todo_id != null){
 
-                startActivityForResult(Intent.createChooser(galleryIntent, "SELECT IMAGE"), GALLERY_PICK);
+                    Intent galleryIntent = new Intent();
+                    galleryIntent.setType("image/*");
+                    galleryIntent.setAction(Intent.ACTION_GET_CONTENT);
+
+                    startActivityForResult(Intent.createChooser(galleryIntent, "SELECT IMAGE"), GALLERY_PICK);
+                } else {
+                    Toast.makeText(TodoInfo.this, "Go to Edit ToDo item activity then Add Image", Toast.LENGTH_SHORT).show();
+                }
+
+
 
             }
         });
@@ -362,6 +402,7 @@ public class TodoInfo extends AppCompatActivity {
                                             public void onComplete(@NonNull Task task) {
 
                                                 if (task.isSuccessful()) {
+                                                    showTodoItemForUpdate();
                                                     mRegProgress.dismiss();
                                                     Toast.makeText(TodoInfo.this, "Success Uploading", Toast.LENGTH_SHORT).show();
                                                 }

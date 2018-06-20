@@ -2,6 +2,7 @@ package singh.pk.todoappdemo.ui.add_todo_item;
 
 import android.app.ProgressDialog;
 import android.content.Intent;
+import android.graphics.Color;
 import android.support.design.widget.FloatingActionButton;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
@@ -33,6 +34,7 @@ public class AddTodoItem extends AppCompatActivity {
     @BindView(R.id.add_todo_btn) FloatingActionButton addTodoInfo;
     @BindView(R.id.todo_recycler_view) RecyclerView todoRecyclerView;
     @BindView(R.id.back_image_view_btn) ImageView backImageBtn;
+    @BindView(R.id.category_name_top_tool_bar_text) TextView categoryNameTopToolBar;
     // ProgressDialog Object
     private ProgressDialog mRegProgress;
 
@@ -46,8 +48,9 @@ public class AddTodoItem extends AppCompatActivity {
     String current_uid;
 
     String category_id;
+    String categoryName;
 
-    int totalTodoCount = 0;
+    int totalTodoCount = 1;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -58,6 +61,9 @@ public class AddTodoItem extends AppCompatActivity {
         ButterKnife.bind(this);
 
         category_id = getIntent().getStringExtra("category_id");
+        categoryName = getIntent().getStringExtra("category_name");
+
+        categoryNameTopToolBar.setText(categoryName);
 
         // Initialize ProgressDialog.
         mRegProgress = new ProgressDialog(this);
@@ -117,7 +123,7 @@ public class AddTodoItem extends AppCompatActivity {
     }
 
     private void todoCount(int position) {
-        totalTodoCount = position+1;
+        totalTodoCount = position + 2;
     }
 
     public static class TodoViewHolder extends RecyclerView.ViewHolder {
@@ -143,6 +149,7 @@ public class AddTodoItem extends AppCompatActivity {
 
             if (todoStatus.equals("true")){
                 this.todoStatus.setText("Done");
+                this.todoStatus.setTextColor(Color.parseColor("#C51162"));
             } else {
                 this.todoStatus.setText("Pending");
             }
@@ -162,7 +169,7 @@ public class AddTodoItem extends AppCompatActivity {
             public void onClick(View view) {
                 Intent intent = new Intent(AddTodoItem.this, TodoInfo.class);
                 intent.putExtra("category_id", category_id);
-                intent.putExtra("todo_count", totalTodoCount);
+                intent.putExtra("todo_count", String.valueOf(totalTodoCount));
                 startActivity(intent);
 
                 Toast.makeText(AddTodoItem.this, ""+totalTodoCount, Toast.LENGTH_SHORT).show();

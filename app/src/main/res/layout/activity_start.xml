@@ -14,11 +14,13 @@
         android:layout_height="wrap_content"
         android:layout_above="@+id/start_login_btn"
         android:layout_centerHorizontal="true"
-        android:layout_marginBottom="50dp"
+        android:layout_marginBottom="60dp"
         android:text="Welcome to Demo \n To Do App"
         android:textAlignment="center"
-        android:textColor="@android:color/white"
-        android:textSize="22sp"
+        android:textColor="@android:color/black"
+        android:alpha="0.4"
+        android:fontFamily="sans-serif-light"
+        android:textSize="26sp"
         android:textStyle="bold" />
 
     <Button
@@ -32,7 +34,8 @@
         android:paddingLeft="20dp"
         android:paddingRight="20dp"
         android:text="ALREADY HAVE ACCOUNT"
-        android:textColor="@color/colorPrimaryDark" />
+        android:fontFamily="sans-serif-light"
+        android:textColor="@color/colorAccent" />
 
     <Button
         android:id="@+id/start_reg_btn"
@@ -45,6 +48,7 @@
         android:paddingLeft="25dp"
         android:paddingRight="25dp"
         android:text="Create New Account"
+        android:fontFamily="sans-serif-light"
         android:textColor="@android:color/white" />
 
 

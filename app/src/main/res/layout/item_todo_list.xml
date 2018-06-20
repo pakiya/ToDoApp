@@ -6,8 +6,8 @@
 
     <de.hdodenhof.circleimageview.CircleImageView
         android:id="@+id/todo_item_image"
-        android:layout_width="65dp"
-        android:layout_height="65dp"
+        android:layout_width="60dp"
+        android:layout_height="60dp"
         android:layout_marginBottom="15dp"
         android:layout_marginLeft="15dp"
         android:src="@mipmap/ic_launcher"
@@ -20,7 +20,7 @@
         android:layout_alignTop="@+id/todo_item_image"
         android:text="Display Name"
         android:textColor="@android:color/black"
-        android:textSize="18sp"
+        android:textSize="16sp"
         android:layout_marginLeft="20dp"
         android:fontFamily="sans-serif-light"
         android:layout_toRightOf="@+id/todo_item_image" />
@@ -30,7 +30,7 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_below="@+id/todo_item_name"
-        android:layout_marginTop="10dp"
+        android:layout_marginTop="5dp"
         android:text="User default Status"
         android:fontFamily="sans-serif-light"
         android:layout_alignLeft="@+id/todo_item_name" />
